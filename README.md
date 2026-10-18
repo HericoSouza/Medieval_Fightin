@@ -1,45 +1,41 @@
-# Medieval Fightin' 🗡️🔥
+# Medieval Fightin' — Alpha
 
-> *"Medieval Fightin' é um jogo feito inteiramente por mim, como uma forma de estudo da linguagem de Python. Ele é um simulador de combate, utilizando apenas texto para suas representações gráficas."*
+Medieval Fightin' é um RPG textual com interface Tkinter e combate por turnos. Esta versão contém três histórias independentes. Em cada partida, o jogador cria um personagem, escolhe uma única missão e atravessa sete encontros na sequência: três combates, um mini-Boss, dois combates e um Boss final.
 
----
+## Executar
 
-> [!WARNING]
-> Como este jogo foi desenvolvido exclusivamente com o objetivo de **aprendizado e prática da linguagem Python**, o sistema de combate atualmente **não está balanceado** e continuará passando por ajustes e balanceamentos de atributos, danos e habilidades ao longo do tempo.
+Com Python 3 instalado, abra o terminal dentro desta pasta e execute:
 
----
+```powershell
+python "Medieval Fightin'.py"
+```
 
-## 📋 Sobre o Jogo
+A interface utiliza Tkinter, que normalmente acompanha a instalação do Python para Windows. Nenhuma biblioteca externa é necessária.
 
-**Medieval Fightin'** é um jogo de estratégia em turnos desenvolvido via terminal. O projeto funciona como um simulador de combate textual onde o jogador cria um personagem com classe própria e enfrenta vilões em uma batalha com gerenciamento de recursos, mecânicas de efeitos de status e eventos imprevisíveis no meio do combate.
+## Histórias
 
----
+- **A Gangue do Dente Partido**: a perseguição a uma gangue de goblins, com goblins montados, mercenários, um troll rebelde e o Goblin-Chefe.
+- **O Culto sob as Lápides**: uma investigação sobre ladrões de túmulos que conduz a um culto necromântico, ao Médico da Peste e ao Bruxo.
+- **A Lenda das Cinzas**: esqueletos em evolução, Vharjir e o dragão ancestral Vharzun.
 
-## 🎮 Funcionalidades e Mecânicas
+Cada história tem diálogos, inimigos, recompensas e um companheiro recrutável. O companheiro ataca imediatamente depois do protagonista em cada turno. Na batalha contra goblins montados, o jogador pode atacar separadamente o goblin ou sua montaria.
 
-* **Criação de Personagem Personalizada:** Escolha o nome e a classe do seu herói:
-  * **Guerreiro:** Alta vida e uso de *Modo Berserker* para potencializar ataques.
-  * **Mago:** Alta mana e feitiços de dano massivo (*Meteoro Arcano*, *Raio de Gelo*).
-  * **Arqueiro:** Equilíbrio de atributos e capacidade de envenenar inimigos.
-* **Variedade de Inimigos:**
-  * **Dragão:** Voa para se curar/proteger e ataca com sopros de fogo devastadores.
-  * **Bruxo:** Invoca esqueletos e realiza rituais para trazer o *Ancião Antigo* à batalha.
-  * **Goblin:** Capaz de roubar e utilizar habilidades especiais lendárias.
-* **Sistema de Combate Dinâmico:**
-  * Interface totalmente textual via terminal com limpeza automática de tela.
-  * Gestão de **Mana** e **Vida** com uso estratégico de poções.
-  * **Efeitos de Status (Condições):** Sangramento, envenenamento e congelamento que afetam diretamente o turno dos combatentes.
-  * **Invocação do Ancião:** Um terceiro combatente imprevisível que entra na luta e pode atacar tanto o herói quanto o vilão.
+Ao concluir uma história, a interface apresenta o aviso de fim da Alpha. Para jogar outra missão, reinicie e crie outro personagem.
 
----
+## Arquivos principais
 
-## 📁 Estrutura do Projeto
+- `Medieval Fightin'.py`: inicializa a interface.
+- `interface.py`: interface Tkinter e fluxo da aventura.
+- `missoes.py`: diálogos, sete encontros e loots exclusivos de cada história.
+- `entidades.py`: personagens, companheiros, inimigos normais e Bosses.
+- `combate.py`: regras de turno, ações, ataques, condições e seleção de alvos.
+- `progressao.py`: XP, níveis, loot e recuperação entre encontros.
+- `configuracao.py`: atributos iniciais, danos, poções e curva de progressão.
+- `criacao_personagem.py`: criação do personagem a partir do nome e classe.
+- `condicao.py`: processamento de veneno, congelamento e sangramento.
 
-```text
-.
-├── Medieval Fightin'.py   # Arquivo principal (Ponto de entrada do jogo)
-├── criacao_personagem.py # Lógica de criação de classe e atributos do herói
-├── criacao_vilao.py      # Lógica de criação dos inimigos (Dragão, Bruxo, Goblin)
-├── combate.py            # Motor principal do combate e alternância de turnos
-├── condicao.py           # Processamento dos efeitos de status (Veneno, Sangramento, etc.)
-└── oanciao.py            # Estrutura de dados e atributos do Ancião
+## Progressão da Alpha
+
+Os encontros concedem XP por vitória. A distribuição atual foi pensada para levar o personagem do nível 1 ao nível 5 durante a história completa. Os valores podem ser alterados em `missoes.py` e `configuracao.py`. Os loots de cada encontro também alteram atributos, poções, ouro ou defesa.
+
+A interface é deliberadamente simples: o texto da história fica na parte superior e, na parte inferior, aparecem barras de vida, mana, experiência, poções, defesa, ouro, companheiro, inimigos e ações de combate.

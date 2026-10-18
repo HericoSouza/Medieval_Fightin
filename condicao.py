@@ -1,59 +1,31 @@
 import random
 
+from configuracao import CONDICOES
 
-def condição(vilão, personagem, ancião):
 
-    dano_veneno = 0
-    dano_sangramento = 0
-    congelado = False
-    #Condições do Personagem
-    if personagem["personagem_sangramento"] == True:
-        if personagem["contagem_sangramento"] > 0:
-            print("Você está sangrando!")
-            dano_sangramento = random.randint(5, 15)
-            print(
-                personagem["nome"],
-                "perdeu",
-                dano_sangramento,
-                "de vida para o seu sangramento!"
-            )
-            personagem["vida"] -= dano_sangramento
-            personagem["contagem_sangramento"] -= 1
-            if personagem["contagem_sangramento"] <= 0:
-                personagem["contagem_sangramento"] = 0
-                personagem["personagem_sangramento"] = False
-                print("Você curou-se do sangramento!")
+class SistemaCondicoes:
+    @staticmethod
+    def processar_inicio_turno(combatente):
+        mensagens = []
+        pode_agir = True
 
-    if personagem["personagem_sangramento"] == False:
-        personagem["condição"] = False
+        if getattr(combatente, "sangramento_turnos", 0) > 0:
+            status = CONDICOES["sangramento"]
+            dano = random.randint(status["dano_minimo"], status["dano_maximo"])
+            combatente.vida = max(0, combatente.vida - dano)
+            combatente.sangramento_turnos -= 1
+            mensagens.append(f"{combatente.nome} sofre {dano} de dano por sangramento.")
 
-    #Condições do Vilão
-    if vilão["inimigo_congelado"] == True:
-        print("O Inimigo está congelado!")
-        print(vilão["nome"], "não conseguiu agir!")
-        vilão["inimigo_congelado"] = False
-        congelado = True
+        if getattr(combatente, "veneno_turnos", 0) > 0 and combatente.vida > 0:
+            dano_minimo, dano_maximo = getattr(combatente, "veneno_dano", (4, 8))
+            dano = random.randint(dano_minimo, dano_maximo)
+            combatente.vida = max(0, combatente.vida - dano)
+            combatente.veneno_turnos -= 1
+            mensagens.append(f"{combatente.nome} sofre {dano} de dano pelo veneno.")
 
-    if vilão["inimigo_envenenado"] == True:
-        if vilão["contagem_veneno"] > 0:
-            print("O Inimigo está envenenado!")
-            dano_veneno = random.randint(5, 15)
-            print(
-                vilão["nome"],
-                "perdeu",
-                dano_veneno,
-                "de vida para o veneno!"
-            )
-            vilão["vida"] -= dano_veneno
-            vilão["contagem_veneno"] -= 1
-            if vilão["contagem_veneno"] <= 0:
-                vilão["contagem_veneno"] = 0
-                vilão["inimigo_envenenado"] = False
-                print("O inimigo curou-se do envenenamento!")
-        else:
-            vilão["inimigo_envenenado"] = False
-            print("O inimigo curou-se do envenenamento!")
-    if vilão["inimigo_congelado"] == False and vilão["inimigo_envenenado"] == False:
-        vilão["condição"] = False
+        if getattr(combatente, "congelado_turnos", 0) > 0 and combatente.vida > 0:
+            combatente.congelado_turnos -= 1
+            pode_agir = False
+            mensagens.append(f"{combatente.nome} está congelado e perde o turno.")
 
-    return dano_veneno, congelado
+        return mensagens, pode_agir

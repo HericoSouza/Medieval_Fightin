@@ -1,686 +1,271 @@
-import math
 import random
-import os
-import time
 
-import condicao
-import oanciao
-
-
-# LIMPEZA DE TELA - INICIO
-
-def limpar_tela():
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('clear')
-
-# LIMPEZA DE TELA - FIM
-
-
-def turno(personagem, alvo):
-
-    ataque_basico = personagem["ataque_basico"]
-    ataque_especial = personagem["ataque_especial"]
-    habilidade_especial = personagem["habilidade_especial"]
-    pocao_cura = personagem["pocao_cura"]
-    pocao_mana = personagem["pocao_mana"]
-
-    if personagem["modo_berserker"] == True:
-        print(
-            f"Você está com Modo Berserker Ativado! "
-            f"Seu golpe de fúria causa mais dano por "
-            f"{personagem['contagem_berserker']} golpes!"
-        )
-
-    print("\nEscolha sua ação:")
-    print(f"1. Ataque Básico - Recupera 20 de Mana: {ataque_basico}")
-    print(f"2. Ataque Especial - Custa 30 de Mana: {ataque_especial}")
-    print(f"3. Habilidade Especial - 3 Usos: {habilidade_especial}")
-    print(f"4. Poção de Cura - Cura 100 de vida: {pocao_cura}")    
-    print(f"5. Poção de Mana - Cura 50 de Mana: {pocao_mana}")        
-    print("====================================================")
-    print(f"Vida atual: {personagem['vida']}")
-    print(f"Mana atual: {personagem['mana']}")
-    print("====================================================")
-
-    escolha = input("Digite o número da ação desejada: ")
-
-    # ATAQUE BÁSICO
-
-    if escolha == "1":
-
-        if ataque_basico == "espada":
-            dano = random.randint(15, 25)
-
-        elif ataque_basico == "bola de fogo":
-            dano = random.randint(10, 30)
-
-        elif ataque_basico == "arco e flecha":
-            dano = random.randint(20, 25)
-
-        personagem["mana"] += 20
-
-        time.sleep(8)
-        limpar_tela()
-
-        print(f"\nVocê usou {ataque_basico}!")
-        print(f"Causou {dano} de dano.")
-        print("Mana recuperada: +20")
-        print(f"Mana atual: {personagem['mana']}")
-
-        return dano
-
-    # ATAQUE ESPECIAL
-
-    elif escolha == "2":
-
-        if personagem["mana"] < 30:
-            print("\nVocê não possui mana suficiente!")
-            time.sleep(8)
-            limpar_tela()
-            return turno(personagem, alvo)
-
-        personagem["mana"] -= 30
-
-        if ataque_especial == "golpe de fúria":
-
-            if personagem["modo_berserker"] == True:
-
-                dano = random.randint(70, 100)
-
-                personagem["contagem_berserker"] -= 1
-
-                if personagem["contagem_berserker"] <= 0:
-
-                    personagem["contagem_berserker"] = 0
-                    personagem["modo_berserker"] = False
-
-                    print(
-                        "Você sente a Fúria Berserk saindo "
-                        "de seu corpo. Seu ataque voltou "
-                        "ao dano normal!"
-                    )
-
-            else:
-
-                dano = random.randint(30, 50)
-
-        elif ataque_especial == "raio de gelo":
-
-            dano = random.randint(25, 35)
-
-            alvo["inimigo_congelado"] = True
-            alvo["condição"] = True
-
-            print("O inimigo foi congelado!")
-
-        elif ataque_especial == "chuva de flechas":
-
-            dano = random.randint(45, 50)
-
-        time.sleep(8)
-        limpar_tela()
-
-        print(f"\nVocê usou {ataque_especial}!")
-        print(f"Causou {dano} de dano.")
-        print(f"Mana restante: {personagem['mana']}")
-
-        return dano
-
-    # HABILIDADE ESPECIAL
-
-    elif escolha == "3":
-
-        if habilidade_especial == "modo berserker":
-
-            personagem["modo_berserker"] = True
-            personagem["contagem_berserker"] = 3
-
-            time.sleep(8)
-            limpar_tela()
-
-            print("\nModo Berserker ativado!")
-            print("Seus ataques agora causam mais dano.")
-
-            return 0
-
-        elif habilidade_especial == "meteoro arcano":
-
-            if personagem["mana"] < 50:
-
-                print("\nVocê não possui mana suficiente!")
-
-                time.sleep(8)
-                limpar_tela()
-
-                return turno(personagem, alvo)
-
-            personagem["mana"] -= 50
-
-            dano = random.randint(80, 120)
-
-            print("\nVocê invocou um meteoro arcano!")
-            print(f"Causou {dano} de dano.")
-            print(f"Mana restante: {personagem['mana']}")
-
-            time.sleep(8)
-            limpar_tela()
-
-            return dano
-
-        elif habilidade_especial == "envenenamento":
-
-            alvo["inimigo_envenenado"] = True
-            alvo["contagem_veneno"] = 3
-            alvo["condição"] = True
-
-            print("\nVocê envenenou o inimigo!")
-            print("Ele sofrerá dano ao longo do tempo.")
-
-            time.sleep(8)
-            limpar_tela()
-
-            return 0
-    elif escolha == "4":
-        personagem['vida'] += 100
-        print("Você recuperou 100 de vida!")
-        personagem["pocao_cura"] -= 1
-        dano = 0
-        return dano
-
-    elif escolha == "5":
-        personagem['mana'] += 50
-        print("Você recuperou 50 de Mana!")
-        personagem["pocao_mana"] -= 1
-        dano = 0
-        return dano
-
-    # ESCOLHA INVÁLIDA
-
-    else:
-
-        print("\nEscolha inválida. Tente novamente.")
-
-        time.sleep(8)
-        limpar_tela()
-
-        return turno(personagem, alvo)
-
-
-# TURNO DO VILÃO
-
-def turno_vilão(personagem, vilão):
-
-    dano = 0
-
-    # DRAGÃO
-
-    if vilão["classe"].lower() == "dragão":
-
-        ataque = random.choice(
-            ["Garrada", "Voo", "Sopro de fogo"]
-        )
-
-        if ataque == "Garrada":
-
-            dano = random.randint(20, 40)
-
-            print(f"\nO Dragão usou {ataque}!")
-            print(f"Causou {dano} de dano.")
-
-        elif ataque == "Voo":
-
-            vilão["voo_dragao"] = True
-            dano = 0
-            vilão["vida"] += 30
-
-            print("\nO Dragão levantou voo e os céus o agraciaram!")
-            print("Ele não causou dano neste turno.")
-
-        elif ataque == "Sopro de fogo":
-
-            dano = random.randint(60, 90)
-
-            print("\nO Dragão usou Sopro de fogo!")
-            print(f"Causou {dano} de dano.")
-
-    # BRUXO
-
-    elif vilão["classe"].lower() == "bruxo":
-
-        ataque = random.choice(
-            [
-                "Magia Macabra",
-                "Necromancia",
-                "Reviver Ancião"
-            ]
-        )
-
-        if ataque == "Magia Macabra":
-
-            dano = random.randint(15, 30)
-
-            print(f"\nO Bruxo usou {ataque}!")
-            print(f"Causou {dano} de dano.")
-
-        elif ataque == "Necromancia":
-
-            vilão["esqueletos"] = True
-            dano = random.randint(20, 35)
-
-            print("\nO Bruxo usou Necromancia!")
-            print("Esqueletos foram invocados!")
-            print(f"Causou {dano} de dano.")
-
-        elif ataque == "Reviver Ancião":
-
-            dano = 0
-
-            print("\nO Bruxo usou Reviver Ancião!")
-            print("O Ancião foi invocado!")
-
-            return dano, True
-
-    # GOBLIN
-
-    elif vilão["classe"].lower() == "goblin":
-
-        ataque = random.choice(
-            [
-                "Adaga",
-                "Chamar Amigos",
-                "Roubar"
-            ]
-        )
-
-        if ataque == "Adaga":
-
-            dano = random.randint(10, 15)
-
-            personagem["personagem_sangramento"] = True
-            personagem["condição"] = True
-            personagem["contagem_sangramento"] = 3
-
-            print("\nO Goblin usou Adaga!")
-            print(f"Causou {dano} de dano.")
-            print("Você começou a sangrar!")
-
-        elif ataque == "Chamar Amigos":
-
-            vilão["vida"] += 30
-            dano = 0
-
-            print("\nO Goblin chamou seus amigos!")
-            print("O Goblin recuperou 30 de vida.")
-
-        elif ataque == "Roubar":
-
-            dano = 0
-
-            print("\nO Goblin tentou roubar uma habilidade!")
-
-            roubo = random.choice(
-                [
-                    "meteoro arcano",
-                    "sopro do dragão",
-                    "invocar ancião",
-                    "golpe de fúria"
-                ]
-            )
-
-            if roubo == "meteoro arcano":
-
-                dano = random.randint(80, 120)
-
-                print("\nGoblin invocou um meteoro arcano!")
-                print(f"Causou {dano} de dano.")
-
-            elif roubo == "sopro do dragão":
-
-                dano = random.randint(60, 90)
-
-                print("\nO Goblin usou Sopro do Dragão!")
-                print(f"Causou {dano} de dano.")
-
-            elif roubo == "invocar ancião":
-
-                dano = 0
-
-                print(
-                    "\nO Goblin fez um ritual Macabro "
-                    "e usou Reviver Ancião!"
-                )
-
-                print("O Ancião foi invocado!")
-
-                return dano, True
-
-            elif roubo == "golpe de fúria":
-
-                dano = random.randint(70, 100)
-
-                print(
-                    "\nO Goblin se enraivece, ficando "
-                    "completamente vermelho, e liberta "
-                    "a sua fúria roubada!"
-                )
-
-                print(f"Causou {dano} de dano.")
-
-    time.sleep(12)
-    limpar_tela()
-
-    return dano, False
-
-
-# TURNO DO ANCIÃO
-
-def turno_anciao(anciao, personagem, vilão):
-
-    print("TURNO DO ANCIÃO")
-
-    alvo = random.choice(
-        ["personagem", "vilão"]
-    )
-
-    dano = random.randint(80, 120)
-
-    if alvo == "personagem":
-
-        personagem["vida"] -= dano
-
-        if personagem["vida"] < 0:
-            personagem["vida"] = 0
-
-        print(
-            f"\nO Ancião atacou "
-            f"{personagem['nome']}!"
-        )
-
-        print(f"Causou {dano} de dano.")
-
-        print(
-            f"{personagem['nome']} "
-            f"agora tem "
-            f"{personagem['vida']} de vida."
-        )
-
-    elif alvo == "vilão":
-
-        vilão["vida"] -= dano
-
-        if vilão["vida"] < 0:
-            vilão["vida"] = 0
-
-        print(
-            f"\nO Ancião atacou "
-            f"{vilão['nome']}!"
-        )
-
-        print(f"Causou {dano} de dano.")
-
-        print(
-            f"{vilão['nome']} "
-            f"agora tem "
-            f"{vilão['vida']} de vida."
-        )
-
-    time.sleep(12)
-    limpar_tela()
-
-
-# COMBATE
-
-def combate(personagem, vilão, ancião):
-
-    anciao = None
-
-    atacante = random.choice(
-        ["personagem", "vilão"]
-    )
-
-    print("          COMBATE INICIADO")
-
-    print(
-        f"{personagem['nome']} "
-        f"({personagem['classe']}) "
-        f"VS "
-        f"{vilão['nome']} "
-        f"({vilão['classe']})"
-    )
-
-    print(f"\nPrimeiro a agir: {atacante}")
-
-    while (
-        personagem["vida"] > 0
-        and
-        (
-            vilão["vida"] > 0
-            or
-            (
-                anciao is not None
-                and
-                anciao["vida"] > 0
-            )
-        )
-    ):
-
-        # TURNO DO PERSONAGEM
-
-        if atacante == "personagem":
-
-            print("SEU TURNO")
-
-            # ESCOLHA DO ALVO
-
-            if (
-                anciao is not None
-                and
-                anciao["vida"] > 0
-                and
-                vilão["vida"] > 0
-            ):
-
-                print("\nEscolha seu alvo:")
-                print("1. Vilão", vilão['nome'], " - ", vilão['vida'])
-                print("2. Ancião - ", ancião['vida'])
-
-                alvo = input(
-                    "Digite o número do alvo: "
-                )
-
-                while alvo not in ["1", "2"]:
-
-                    print("\nEscolha inválida.")
-
-                    alvo = input(
-                        "Digite o número do alvo: "
-                    )
-
-                if alvo == "1":
-
-                    alvo_personagem = vilão
-
+from configuracao import DANOS_PERSONAGENS, VALORES_POCOES, CONDICOES
+from condicao import SistemaCondicoes
+
+
+class SistemaCombate:
+    def __init__(self, personagem, companheiro, inimigos):
+        self.personagem = personagem
+        self.companheiro = companheiro
+        self.inimigos = list(inimigos)
+        self.condicoes = SistemaCondicoes()
+        self.turno = 0
+        self.encerrado = False
+        self.resultado = None
+
+    def inimigos_vivos(self):
+        return [inimigo for inimigo in self.inimigos if inimigo.vida > 0]
+
+    def obter_alvos(self):
+        alvos = []
+        for inimigo in self.inimigos_vivos():
+            if inimigo.montaria_ativa and inimigo.montaria_vida > 0:
+                alvos.append((inimigo, "montaria", f"{inimigo.montaria['nome']} — {inimigo.montaria_vida}/{inimigo.montaria_vida_maxima} PV"))
+            alvos.append((inimigo, "corpo", f"{inimigo.nome} — {inimigo.vida}/{inimigo.vida_maxima} PV"))
+        return alvos
+
+    def estado(self):
+        if self.personagem.vida <= 0:
+            self.encerrado = True
+            self.resultado = "derrota"
+        elif not self.inimigos_vivos():
+            self.encerrado = True
+            self.resultado = "vitoria"
+        return self.resultado
+
+    def _aplicar_dano_alvo(self, inimigo, parte, dano, mensagens):
+        if inimigo.vida <= 0:
+            return
+        if parte == "montaria" and inimigo.montaria_ativa:
+            dano_real = max(1, dano - getattr(inimigo, "defesa_montaria", 0))
+            inimigo.montaria_vida = max(0, inimigo.montaria_vida - dano_real)
+            mensagens.append(f"Você causou {dano_real} de dano à montaria de {inimigo.nome}.")
+            if inimigo.montaria_vida <= 0:
+                inimigo.montaria_ativa = False
+                inimigo.tipo = "goblin"
+                inimigo.nome = inimigo.nome.replace("montado", "saqueador")
+                inimigo.ataque = "Faca de saqueador"
+                inimigo.dano = (5, 9)
+                mensagens.append(f"A montaria de {inimigo.nome} cai e foge. O goblin continua lutando a pé.")
+            return
+
+        dano_real = max(1, dano - getattr(inimigo, "defesa", 0))
+        inimigo.vida = max(0, inimigo.vida - dano_real)
+        mensagens.append(f"{inimigo.nome} recebe {dano_real} de dano. Vida: {inimigo.vida}/{inimigo.vida_maxima}.")
+        if inimigo.vida <= 0 and inimigo.montaria_ativa:
+            inimigo.montaria_ativa = False
+            mensagens.append(f"{inimigo.nome} cai. A montaria assustada foge para longe.")
+        elif inimigo.vida <= 0:
+            mensagens.append(f"{inimigo.nome} foi derrotado.")
+
+    def _alvo_automatico(self):
+        vivos = self.inimigos_vivos()
+        return random.choice(vivos) if vivos else None
+
+    def _dano_jogador(self, acao):
+        classe = self.personagem.classe
+        dados = DANOS_PERSONAGENS[classe]
+        if acao == "basico":
+            dano = random.randint(*dados["basico"])
+            self.personagem.mana = min(self.personagem.mana_maxima, self.personagem.mana + 8)
+            nome = {"Guerreiro": "Golpe de espada", "Mago": "Bola de fogo", "Arqueiro": "Flecha precisa"}[classe]
+            return dano + self.personagem.bonus_dano, nome, True
+        if acao == "especial":
+            custo = dados["especial_custo"]
+            if self.personagem.mana < custo:
+                return None, f"Você precisa de {custo} de mana para usar o ataque especial.", False
+            self.personagem.mana -= custo
+            minimo, maximo = dados["especial"]
+            if classe == "Guerreiro" and self.personagem.contagem_berserker > 0:
+                minimo, maximo = 42, 60
+                self.personagem.contagem_berserker -= 1
+                if self.personagem.contagem_berserker <= 0:
+                    self.personagem.contagem_berserker = 0
+                    self.personagem.modo_berserker = False
+                    nome = "Golpe de Fúria (último golpe berserker)"
                 else:
-
-                    alvo_personagem = anciao
-
-            elif vilão["vida"] > 0:
-
-                alvo_personagem = vilão
-
-            elif anciao is not None and anciao["vida"] > 0:
-
-                alvo_personagem = anciao
-
-            dano = turno(
-                personagem,
-                alvo_personagem
-            )
-
-            alvo_personagem["vida"] -= dano
-
-            if alvo_personagem["vida"] < 0:
-                alvo_personagem["vida"] = 0
-
-            print(
-                f"\n{alvo_personagem['nome']} "
-                f"agora tem "
-                f"{alvo_personagem['vida']} de vida."
-            )
-
-            if alvo_personagem["vida"] <= 0:
-
-                print(
-                    f"\n{alvo_personagem['nome']} "
-                    f"foi derrotado!"
-                )
-
-            time.sleep(12)
-            limpar_tela()
-
-            # ESCOLHE O PRÓXIMO ATACANTE
-            # O PERSONAGEM NÃO PODE REPETIR
-
-            possibilidades = []
-
-            if vilão["vida"] > 0:
-
-                possibilidades.append("vilão")
-
-            if (
-                anciao is not None
-                and
-                anciao["vida"] > 0
-            ):
-
-                possibilidades.append("ancião")
-
-            atacante = random.choice(
-                possibilidades
-            )
-
-        # TURNO DO VILÃO
-
-        elif atacante == "vilão":
-
-            print("TURNO DO VILÃO")
-
-            resultado = turno_vilão(
-                personagem,
-                vilão
-            )
-
-            dano = resultado[0]
-            invocou_anciao = resultado[1]
-
-            if invocou_anciao == True:
-
-                if anciao is None:
-
-                    anciao = oanciao.criar_anciao()
-
-                print(
-                    "\nO Ancião entrou no combate!"
-                )
-
-                time.sleep(12)
-                limpar_tela()
-
+                    nome = "Golpe de Fúria Berserker"
             else:
+                nome = {"Guerreiro": "Golpe de Fúria", "Mago": "Raio de Gelo", "Arqueiro": "Chuva de Flechas"}[classe]
+            return random.randint(minimo, maximo) + self.personagem.bonus_dano, nome, True
+        return 0, "", True
 
-                personagem["vida"] -= dano
+    def executar_acao(self, acao, alvo_selecionado=None):
+        if self.encerrado:
+            return [], self.resultado
+        mensagens = []
+        alvos = self.obter_alvos()
+        alvo = None
+        parte = "corpo"
+        if alvo_selecionado is not None:
+            alvo, parte = alvo_selecionado
+        elif alvos:
+            alvo, parte, _ = alvos[0]
 
-                if personagem["vida"] < 0:
-                    personagem["vida"] = 0
+        precisa_alvo = acao in ("basico", "especial", "habilidade") and not (acao == "habilidade" and self.personagem.classe == "Guerreiro")
+        if precisa_alvo and alvo is None:
+            return ["Não há alvo disponível."], None
 
-                print(
-                    f"\n{personagem['nome']} "
-                    f"agora tem "
-                    f"{personagem['vida']} de vida."
-                )
-
-            # O VILÃO NÃO PODE REPETIR
-
-            possibilidades = []
-
-            if personagem["vida"] > 0:
-
-                possibilidades.append("personagem")
-
-            if (
-                anciao is not None
-                and
-                anciao["vida"] > 0
-            ):
-
-                possibilidades.append("ancião")
-
-            atacante = random.choice(
-                possibilidades
-            )
-
-        # TURNO DO ANCIÃO
-
-        elif atacante == "ancião":
-
-            turno_anciao(
-                anciao,
-                personagem,
-                vilão
-            )
-
-            # O ANCIÃO NÃO PODE REPETIR
-
-            possibilidades = []
-
-            if personagem["vida"] > 0:
-
-                possibilidades.append("personagem")
-
-            if vilão["vida"] > 0:
-
-                possibilidades.append("vilão")
-
-            if possibilidades:
-
-                atacante = random.choice(
-                    possibilidades
-                )
-
-    print("          COMBATE ENCERRADO")
-
-    if personagem["vida"] <= 0:
-
-        print(
-            f"{personagem['nome']} foi derrotado!"
-        )
-
-        if vilão["vida"] > 0:
-
-            print(f"{vilão['nome']} venceu!")
-
-        elif anciao is not None and anciao["vida"] > 0:
-
-            print("O Ancião venceu!")
-
-    elif vilão["vida"] <= 0:
-
-        if anciao is not None and anciao["vida"] > 0:
-
-            print(
-                f"{vilão['nome']} foi derrotado!"
-            )
-
-            print("O Ancião ainda está vivo!")
-
+        condicao_msgs, pode_agir = self.condicoes.processar_inicio_turno(self.personagem)
+        mensagens.extend(condicao_msgs)
+        if self.personagem.vida <= 0:
+            mensagens.append(f"{self.personagem.nome} não consegue continuar.")
+            self.encerrado = True
+            self.resultado = "derrota"
+            return mensagens, self.resultado
+        if not pode_agir:
+            mensagens.append("Você perdeu a ação deste turno.")
+            consumiu_turno = True
         else:
+            consumiu_turno = True
+            if acao == "basico":
+                dano, nome_acao, _ = self._dano_jogador("basico")
+                mensagens.append(f"Você usou {nome_acao} e causou {dano} de dano.")
+                self._aplicar_dano_alvo(alvo, parte, dano, mensagens)
+            elif acao == "especial":
+                dano, nome_acao, valido = self._dano_jogador("especial")
+                if not valido:
+                    return [nome_acao], None
+                mensagens.append(f"Você usou {nome_acao}.")
+                if self.personagem.classe == "Mago":
+                    if parte == "montaria":
+                        alvo.congelado_turnos = max(alvo.congelado_turnos, 1)
+                    else:
+                        alvo.congelado_turnos = max(alvo.congelado_turnos, 1)
+                    mensagens.append(f"{alvo.nome} foi envolvido pelo gelo.")
+                self._aplicar_dano_alvo(alvo, parte, dano, mensagens)
+            elif acao == "habilidade":
+                if self.personagem.classe == "Guerreiro":
+                    self.personagem.modo_berserker = True
+                    self.personagem.contagem_berserker = 3
+                    mensagens.append("Você assume o Modo Berserker. Seus próximos três golpes especiais causam dano aumentado.")
+                elif self.personagem.classe == "Mago":
+                    custo = DANOS_PERSONAGENS["Mago"]["habilidade_custo"]
+                    if self.personagem.mana < custo:
+                        return [f"Você precisa de {custo} de mana para invocar o Meteoro Arcano."], None
+                    self.personagem.mana -= custo
+                    dano = random.randint(*DANOS_PERSONAGENS["Mago"]["habilidade"]) + self.personagem.bonus_dano
+                    mensagens.append(f"Você invoca o Meteoro Arcano e causa {dano} de dano.")
+                    self._aplicar_dano_alvo(alvo, parte, dano, mensagens)
+                elif self.personagem.classe == "Arqueiro":
+                    alvo.veneno_turnos = CONDICOES["veneno"]["duracao"]
+                    alvo.veneno_dano = DANOS_PERSONAGENS["Arqueiro"]["veneno"]
+                    mensagens.append(f"Você envenenou {alvo.nome}. O veneno durará até três turnos do alvo.")
+            elif acao == "cura":
+                if self.personagem.pocao_cura <= 0:
+                    return ["Você não possui poções de cura."], None
+                if self.personagem.vida >= self.personagem.vida_maxima:
+                    return ["Sua vida já está cheia; guarde a poção."], None
+                antes = self.personagem.vida
+                self.personagem.vida = min(self.personagem.vida_maxima, self.personagem.vida + VALORES_POCOES["cura"])
+                recuperado = self.personagem.vida - antes
+                self.personagem.pocao_cura -= 1
+                mensagens.append(f"Você usou uma poção de cura e recuperou {recuperado} de vida.")
+            elif acao == "mana":
+                if self.personagem.pocao_mana <= 0:
+                    return ["Você não possui poções de mana."], None
+                if self.personagem.mana >= self.personagem.mana_maxima:
+                    return ["Sua mana já está cheia; guarde a poção."], None
+                antes = self.personagem.mana
+                self.personagem.mana = min(self.personagem.mana_maxima, self.personagem.mana + VALORES_POCOES["mana"])
+                recuperado = self.personagem.mana - antes
+                self.personagem.pocao_mana -= 1
+                mensagens.append(f"Você usou uma poção de mana e recuperou {recuperado} de mana.")
+            else:
+                return ["Ação desconhecida."], None
 
-            print(
-                f"{vilão['nome']} foi derrotado!"
-            )
+        if self.personagem.vida <= 0:
+            self.encerrado = True
+            self.resultado = "derrota"
+            return mensagens, self.resultado
 
-            print(
-                f"{personagem['nome']} venceu!"
-            )
+        if not self.inimigos_vivos():
+            self.encerrado = True
+            self.resultado = "vitoria"
+            return mensagens, self.resultado
+
+        if self.companheiro is not None and self.companheiro.vida > 0:
+            ataque_companheiro = self.companheiro.atacar(self.personagem.nivel, self.inimigos_vivos())
+            if ataque_companheiro:
+                alvo_companheiro, dano_companheiro, especial = ataque_companheiro
+                nome_ataque = self.companheiro.especial if especial else "Ataque de companheiro"
+                mensagens.append(f"{self.companheiro.nome} age imediatamente depois de você: {nome_ataque}!")
+                self._aplicar_dano_alvo(alvo_companheiro, "corpo", dano_companheiro, mensagens)
+
+        if not self.inimigos_vivos():
+            self.encerrado = True
+            self.resultado = "vitoria"
+            return mensagens, self.resultado
+
+        self.turno += 1
+        for inimigo in list(self.inimigos_vivos()):
+            if self.personagem.vida <= 0:
+                break
+            if inimigo.vida <= 0:
+                continue
+            status_msgs, pode_inimigo_agir = self.condicoes.processar_inicio_turno(inimigo)
+            mensagens.extend(status_msgs)
+            if inimigo.vida <= 0:
+                mensagens.append(f"{inimigo.nome} caiu por causa dos efeitos de status.")
+                continue
+            if not pode_inimigo_agir:
+                continue
+            dano, mensagem, efeito = self._acao_inimigo(inimigo)
+            mensagens.append(mensagem)
+            alvo_grupo = self._escolher_alvo_grupo()
+            if alvo_grupo is None:
+                continue
+            if efeito and efeito.get("tipo") == "veneno":
+                alvo_grupo.veneno_turnos = efeito["turnos"]
+                alvo_grupo.veneno_dano = efeito["dano"]
+                mensagens.append(f"{alvo_grupo.nome} foi envenenado.")
+            if dano > 0:
+                defesa = getattr(alvo_grupo, "defesa", 0)
+                dano_real = max(1, dano - defesa)
+                alvo_grupo.vida = max(0, alvo_grupo.vida - dano_real)
+                mensagens.append(f"{alvo_grupo.nome} recebe {dano_real} de dano. Vida: {alvo_grupo.vida}/{alvo_grupo.vida_maxima}.")
+                if alvo_grupo.vida <= 0:
+                    mensagens.append(f"{alvo_grupo.nome} caiu e não pode mais lutar.")
+
+        if self.personagem.vida <= 0:
+            self.encerrado = True
+            self.resultado = "derrota"
+        elif not self.inimigos_vivos():
+            self.encerrado = True
+            self.resultado = "vitoria"
+
+        return mensagens, self.resultado
+
+    def _escolher_alvo_grupo(self):
+        if self.companheiro is not None and self.companheiro.vida > 0 and random.random() < 0.35:
+            return self.companheiro
+        return self.personagem
+
+    def _acao_inimigo(self, inimigo):
+        inimigo.turnos_ativos += 1
+        tipo = inimigo.tipo
+        if tipo == "troll" and inimigo.turnos_ativos % 3 == 0:
+            dano = random.randint(18, 25)
+            return dano, f"{inimigo.nome} usa Fúria da pedreira e desfere um golpe brutal ({dano} de dano antes da defesa).", None
+        if tipo == "medico_peste" and inimigo.turnos_ativos % 3 == 0:
+            efeito = {"tipo": "veneno", "turnos": 2, "dano": (4, 7)}
+            return random.randint(7, 12), f"{inimigo.nome} espalha Névoa pestilenta, causando dano e deixando uma nuvem venenosa no ar.", efeito
+        if tipo == "vice_culto" and inimigo.turnos_ativos % 3 == 0:
+            return random.randint(16, 22), f"{inimigo.nome} lança uma Maldição curta.", None
+        if tipo == "vharjir" and inimigo.turnos_ativos % 3 == 0:
+            return random.randint(22, 30), f"{inimigo.nome} solta um Sopro ósseo ardente.", None
+        if tipo == "vharzun":
+            ciclo = inimigo.turnos_ativos % 3
+            if ciclo == 0:
+                cura = min(24, inimigo.vida_maxima - inimigo.vida)
+                inimigo.vida += cura
+                return 0, f"{inimigo.nome} bate as asas e absorve calor do magma, recuperando {cura} de vida.", None
+            if ciclo == 2:
+                return random.randint(27, 36), f"{inimigo.nome} lança um Sopro de brasas.", None
+        if tipo == "necromante" and inimigo.turnos_ativos % 3 == 0:
+            return random.randint(20, 27), f"{inimigo.nome} usa Sifão de almas.", None
+        if tipo == "goblin_chefe" and inimigo.turnos_ativos % 3 == 0:
+            return random.randint(17, 24), f"{inimigo.nome} ordena um Comando brutal.", None
+        dano = random.randint(*inimigo.dano)
+        return dano, f"{inimigo.nome} ataca com {inimigo.ataque} ({dano} de dano antes da defesa).", None
